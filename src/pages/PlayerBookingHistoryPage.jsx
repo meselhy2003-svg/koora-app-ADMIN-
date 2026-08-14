@@ -334,8 +334,8 @@ export default function PlayerBookingHistoryPage({ player, onBack }) {
 
               <div>
                 <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase' }}>Match Type</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.85rem', fontWeight: 700, color: '#111827', marginTop: '0.2rem' }}>
-                  <span>⚽</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.85rem', fontWeight: 700, color: '#111827', marginTop: '0.2rem' }}>
+                  <img src="/assets/players/player_pitch_format_icon.png" alt="Pitch Format Icon" style={{ width: '15px', height: '15px', objectFit: 'contain' }} />
                   <span>{bk.matchType}</span>
                 </div>
               </div>
@@ -375,8 +375,12 @@ export default function PlayerBookingHistoryPage({ player, onBack }) {
               <div>
                 <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase' }}>Financials</div>
                 <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginTop: '0.15rem' }}>{bk.financials}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: '#6b7280', marginTop: '0.1rem' }}>
-                  <CreditCard size={12} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: '#6b7280', marginTop: '0.1rem' }}>
+                  {bk.paymentMethod === 'Vodafone Cash' ? (
+                    <img src="/assets/players/vodafone_cash_player_icon.png" alt="Vodafone Cash" style={{ width: '14px', height: '14px', objectFit: 'contain' }} />
+                  ) : (
+                    <CreditCard size={12} />
+                  )}
                   <span>{bk.paymentMethod}</span>
                 </div>
               </div>
