@@ -1,7 +1,10 @@
 import React from 'react';
 import { TrendingUp, Minus, AlertCircle, Clock } from 'lucide-react';
 
-export default function PlatformGlance() {
+export default function PlatformGlance({ userRole = 'admin' }) {
+  const isManager = userRole === 'manager';
+  const isRepresentative = userRole === 'representative';
+
   const metrics = [
     {
       label: 'TOTAL PLAYERS',
@@ -47,13 +50,23 @@ export default function PlatformGlance() {
     }
   ];
 
+  const getGlanceTitle = () => {
+    if (isRepresentative) return 'Representative Field Metrics';
+    if (isManager) return 'Manager Platform Overview';
+    return 'Platform at a Glance';
+  };
+
+  const getGlanceSubtitle = () => {
+    if (isRepresentative) return 'Real-time stadium performance, inspection task queues and booking metrics.';
+    if (isManager) return 'Real-time performance metrics synchronized across your operational manager network.';
+    return 'Real-time performance metrics synchronized across the entire KORA global infrastructure.';
+  };
+
   return (
     <section className="glance-section">
       <div className="glance-header">
-        <h2 className="glance-title">Platform at a Glance</h2>
-        <p className="glance-subtitle">
-          Real-time performance metrics synchronized across the entire KORA global infrastructure.
-        </p>
+        <h2 className="glance-title">{getGlanceTitle()}</h2>
+        <p className="glance-subtitle">{getGlanceSubtitle()}</p>
       </div>
 
       <div className="metrics-grid">

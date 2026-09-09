@@ -27,6 +27,7 @@ import {
 export default function StadiumDetailsPage({ stadium, onBack, onOpenEdit }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('All');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const stadiumName = stadium?.name || 'Al Salam Premium Arena';
   const stadiumId = stadium?.id || 'STAD-8924';
@@ -86,9 +87,11 @@ export default function StadiumDetailsPage({ stadium, onBack, onOpenEdit }) {
       {/* Top Header Title Bar */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.75rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button className="icon-button" onClick={onBack} title="Back to Stadiums List" style={{ background: 'white' }}>
-            <ArrowLeft size={18} />
-          </button>
+          {onBack && (
+            <button className="icon-button" onClick={onBack} title="Back to Stadiums List" style={{ background: 'white' }}>
+              <ArrowLeft size={18} />
+            </button>
+          )}
 
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -431,13 +434,48 @@ export default function StadiumDetailsPage({ stadium, onBack, onOpenEdit }) {
         {/* Pagination Bar */}
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <div className="pagination-controls">
-            <button className="page-btn arrow"><ChevronLeft size={14} /></button>
-            <button className="page-btn active">1</button>
-            <button className="page-btn">2</button>
-            <button className="page-btn">3</button>
+            <button 
+              className="page-btn arrow"
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              style={{ cursor: 'pointer' }}
+            >
+              <ChevronLeft size={14} />
+            </button>
+            {[1, 2, 3].map(p => (
+              <button 
+                key={p} 
+                className={`page-btn ${currentPage === p ? 'active' : ''}`}
+                onClick={() => setCurrentPage(p)}
+                style={{
+                  background: currentPage === p ? '#15A036' : 'transparent',
+                  color: currentPage === p ? 'white' : '#111827',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                {p}
+              </button>
+            ))}
             <span style={{ margin: '0 0.2rem', color: '#9ca3af' }}>...</span>
-            <button className="page-btn">12</button>
-            <button className="page-btn arrow"><ChevronRight size={14} /></button>
+            <button 
+              className={`page-btn ${currentPage === 12 ? 'active' : ''}`}
+              onClick={() => setCurrentPage(12)}
+              style={{
+                background: currentPage === 12 ? '#15A036' : 'transparent',
+                color: currentPage === 12 ? 'white' : '#111827',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              12
+            </button>
+            <button 
+              className="page-btn arrow"
+              onClick={() => setCurrentPage(p => Math.min(12, p + 1))}
+              style={{ cursor: 'pointer' }}
+            >
+              <ChevronRight size={14} />
+            </button>
           </div>
         </div>
       </div>

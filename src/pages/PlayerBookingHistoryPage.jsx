@@ -22,6 +22,7 @@ export default function PlayerBookingHistoryPage({ player, onBack }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStadium, setSelectedStadium] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const playerName = player?.name || 'Ahmed El-Sayed';
   const playerId = player?.id || '#KRA-92831';
@@ -402,15 +403,46 @@ export default function PlayerBookingHistoryPage({ player, onBack }) {
       {/* Pagination Bar */}
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1.5rem' }}>
         <div className="pagination-controls">
-          <button className="page-btn arrow">
+          <button 
+            className="page-btn arrow"
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            style={{ cursor: 'pointer' }}
+          >
             <ChevronLeft size={14} />
           </button>
-          <button className="page-btn active">1</button>
-          <button className="page-btn">2</button>
-          <button className="page-btn">3</button>
+          {[1, 2, 3].map(p => (
+            <button 
+              key={p} 
+              className={`page-btn ${currentPage === p ? 'active' : ''}`}
+              onClick={() => setCurrentPage(p)}
+              style={{
+                background: currentPage === p ? '#15A036' : 'transparent',
+                color: currentPage === p ? 'white' : '#111827',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              {p}
+            </button>
+          ))}
           <span style={{ margin: '0 0.2rem', color: '#9ca3af' }}>...</span>
-          <button className="page-btn">12</button>
-          <button className="page-btn arrow">
+          <button 
+            className={`page-btn ${currentPage === 12 ? 'active' : ''}`}
+            onClick={() => setCurrentPage(12)}
+            style={{
+              background: currentPage === 12 ? '#15A036' : 'transparent',
+              color: currentPage === 12 ? 'white' : '#111827',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            12
+          </button>
+          <button 
+            className="page-btn arrow"
+            onClick={() => setCurrentPage(p => Math.min(12, p + 1))}
+            style={{ cursor: 'pointer' }}
+          >
             <ChevronRight size={14} />
           </button>
         </div>

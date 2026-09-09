@@ -5,14 +5,17 @@ import EcosystemGrid from './components/EcosystemGrid';
 import PlatformGlance from './components/PlatformGlance';
 import Footer from './components/Footer';
 
+import LoginPage from './pages/LoginPage';
 import PlayersPage from './pages/PlayersPage';
 import StadiumsPage from './pages/StadiumsPage';
+import StadiumDetailsPage from './pages/StadiumDetailsPage';
 import ManagersPage from './pages/ManagersPage';
 import RepresentativesPage from './pages/RepresentativesPage';
 
 import { X, Bell, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function App() {
+  const [userRole, setUserRole] = useState(null); // null | 'admin' | 'manager' | 'representative' | 'stadium_owner'
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showNotifications, setShowNotifications] = useState(false);
   const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
@@ -30,41 +33,76 @@ export default function App() {
     setShowAddPlayerModal(false);
   };
 
+  const handleLogin = (role) => {
+    setUserRole(role);
+    setActiveTab('dashboard');
+  };
+
+  const handleLogout = () => {
+    setUserRole(null);
+  };
+
+  // If not authenticated, render the clean white Login Page
+  if (!userRole) {
+    return <LoginPage onLogin={handleLogin} />;
+  }
+
+  const isStadiumOwner = userRole === 'stadium_owner';
+  const isRepresentative = userRole === 'representative';
+  const isManager = userRole === 'manager';
+
   return (
     <div className="app-container">
       <Header 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
         onOpenNotifications={() => setShowNotifications(!showNotifications)}
+        onLogout={handleLogout}
+        userRole={userRole}
       />
 
       <main className="main-content">
-        {activeTab === 'dashboard' && (
+        {/* Stadium Owner Dashboard: Opens its own stadium directly as the dashboard */}
+        {isStadiumOwner && activeTab === 'dashboard' && (
+          <StadiumDetailsPage 
+            stadium={{ 
+              name: 'Al Salam Premium Arena', 
+              id: 'STAD-8924', 
+              location: 'Riyadh, KSA', 
+              hourlyRate: '300 EGP/hr', 
+              type: '11 vs 11 Grass' 
+            }} 
+            onOpenEdit={() => alert('Opening Edit Stadium Modal for Al Salam Premium Arena...')} 
+          />
+        )}
+
+        {/* Standard Ecosystem Dashboard for Admin, Manager, Representative */}
+        {!isStadiumOwner && activeTab === 'dashboard' && (
           <>
-            <HeroBanner />
-            <EcosystemGrid onNavigate={(tabId) => setActiveTab(tabId)} />
-            <PlatformGlance />
+            <HeroBanner userRole={userRole} />
+            <EcosystemGrid onNavigate={(tabId) => setActiveTab(tabId)} userRole={userRole} />
+            <PlatformGlance userRole={userRole} />
           </>
         )}
 
-        {activeTab === 'players' && (
+        {activeTab === 'players' && !isRepresentative && !isStadiumOwner && (
           <PlayersPage onOpenPlayerModal={() => setShowAddPlayerModal(true)} />
         )}
 
-        {activeTab === 'stadiums' && (
+        {activeTab === 'stadiums' && !isStadiumOwner && (
           <StadiumsPage />
         )}
 
-        {activeTab === 'managers' && (
+        {activeTab === 'managers' && userRole === 'admin' && (
           <ManagersPage />
         )}
 
-        {activeTab === 'representatives' && (
+        {activeTab === 'representatives' && !isRepresentative && !isStadiumOwner && (
           <RepresentativesPage />
         )}
       </main>
 
-      <Footer />
+      <Footer userRole={userRole} />
 
       {/* Notifications Drawer */}
       {showNotifications && (
@@ -73,7 +111,9 @@ export default function App() {
             <div className="modal-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Bell size={20} className="text-green" />
-                <h3 className="modal-title" style={{ fontSize: '1.15rem' }}>Platform System Alerts</h3>
+                <h3 className="modal-title" style={{ fontSize: '1.15rem' }}>
+                  {isStadiumOwner ? 'Stadium Alerts' : isRepresentative ? 'Representative Alerts' : isManager ? 'Manager System Alerts' : 'Platform System Alerts'}
+                </h3>
               </div>
               <button className="modal-close" onClick={() => setShowNotifications(false)}>
                 <X size={18} />
@@ -102,7 +142,7 @@ export default function App() {
       )}
 
       {/* Add New Player Modal */}
-      {showAddPlayerModal && (
+      {showAddPlayerModal && !isRepresentative && !isStadiumOwner && (
         <div className="modal-overlay" onClick={() => setShowAddPlayerModal(false)}>
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">

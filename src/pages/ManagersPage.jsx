@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ManagerProfilePage from './ManagerProfilePage';
 import { 
   Search, 
   Plus, 
@@ -17,7 +18,8 @@ export default function ManagersPage() {
   const [selectedStatus, setSelectedStatus] = useState('All');
 
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedManagerModal, setSelectedManagerModal] = useState(null);
+  const [selectedManager, setSelectedManager] = useState(null);
+  const [viewMode, setViewMode] = useState('list'); // 'list' | 'profile'
 
   const managersList = [
     {
@@ -54,6 +56,15 @@ export default function ManagersPage() {
       avatar: '/assets/players/player_omar.png'
     }
   ];
+
+  if (viewMode === 'profile' && selectedManager) {
+    return (
+      <ManagerProfilePage 
+        manager={selectedManager}
+        onBack={() => setViewMode('list')}
+      />
+    );
+  }
 
   const filteredManagers = managersList.filter(m => {
     const matchesSearch = m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -234,7 +245,7 @@ export default function ManagersPage() {
               <button 
                 className="btn-secondary-light" 
                 style={{ borderRadius: '20px', padding: '0.45rem 1.25rem', fontSize: '0.825rem' }}
-                onClick={() => setSelectedManagerModal(mgr)}
+                onClick={() => alert('Edit manager workflow launched')}
               >
                 Edit
               </button>
@@ -242,7 +253,10 @@ export default function ManagersPage() {
               <button 
                 className="btn-primary" 
                 style={{ background: '#4ade80', color: '#052e16', borderRadius: '20px', padding: '0.45rem 1.35rem', fontSize: '0.825rem', fontWeight: 800 }}
-                onClick={() => setSelectedManagerModal(mgr)}
+                onClick={() => {
+                  setSelectedManager(mgr);
+                  setViewMode('profile');
+                }}
               >
                 View Profile
               </button>
@@ -251,60 +265,44 @@ export default function ManagersPage() {
         ))}
       </div>
 
-      {/* Add / View Manager Modal */}
-      {(showAddModal || selectedManagerModal) && (
-        <div className="modal-overlay" onClick={() => { setShowAddModal(false); setSelectedManagerModal(null); }}>
+      {/* Add Manager Modal */}
+      {showAddModal && (
+        <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
           <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '480px' }}>
             <div className="modal-header">
-              <h3 className="modal-title">{showAddModal ? 'Add New Governorate Manager' : selectedManagerModal?.name}</h3>
-              <button className="modal-close" onClick={() => { setShowAddModal(false); setSelectedManagerModal(null); }}>
+              <h3 className="modal-title">Add New Governorate Manager</h3>
+              <button className="modal-close" onClick={() => setShowAddModal(false)}>
                 <X size={18} />
               </button>
             </div>
 
-            {selectedManagerModal ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.875rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <img src={selectedManagerModal.avatar} alt={selectedManagerModal.name} style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover' }} />
-                  <div>
-                    <h4 style={{ fontSize: '1.1rem', fontWeight: 800 }}>{selectedManagerModal.name}</h4>
-                    <span style={{ color: '#6b7280' }}>ID: {selectedManagerModal.id} • {selectedManagerModal.governorate}</span>
-                  </div>
-                </div>
-                <div><strong>Managed Representatives:</strong> {selectedManagerModal.representatives}</div>
-                <div><strong>Assigned Stadiums:</strong> {selectedManagerModal.stadiums}</div>
-                <div><strong>Total Region Players:</strong> {selectedManagerModal.players}</div>
-                <div><strong>Last System Activity:</strong> {selectedManagerModal.lastLogin}</div>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              alert('Success: Appointed new Governorate Manager.');
+              setShowAddModal(false);
+            }} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.35rem' }}>Full Name</label>
+                <input type="text" className="search-input" style={{ width: '100%', paddingLeft: '1rem' }} placeholder="e.g. Omar Hassan" required />
               </div>
-            ) : (
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                alert('Success: Appointed new Governorate Manager.');
-                setShowAddModal(false);
-              }} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.35rem' }}>Full Name</label>
-                  <input type="text" className="search-input" style={{ width: '100%', paddingLeft: '1rem' }} placeholder="e.g. Omar Hassan" required />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.35rem' }}>Assigned Governorate</label>
-                  <select className="search-input" style={{ width: '100%', paddingLeft: '1rem' }}>
-                    <option value="Cairo">Cairo</option>
-                    <option value="Alexandria">Alexandria</option>
-                    <option value="Giza">Giza</option>
-                    <option value="Dakahlia">Dakahlia</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.35rem' }}>Email Address</label>
-                  <input type="email" className="search-input" style={{ width: '100%', paddingLeft: '1rem' }} placeholder="manager@kora.pro" required />
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.75rem' }}>
-                  <button type="button" className="btn-secondary-light" onClick={() => setShowAddModal(false)}>Cancel</button>
-                  <button type="submit" className="btn-primary" style={{ background: '#4ade80', color: '#052e16', fontWeight: 800 }}>Save Manager</button>
-                </div>
-              </form>
-            )}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.35rem' }}>Assigned Governorate</label>
+                <select className="search-input" style={{ width: '100%', paddingLeft: '1rem' }}>
+                  <option value="Cairo">Cairo</option>
+                  <option value="Alexandria">Alexandria</option>
+                  <option value="Giza">Giza</option>
+                  <option value="Dakahlia">Dakahlia</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.35rem' }}>Email Address</label>
+                <input type="email" className="search-input" style={{ width: '100%', paddingLeft: '1rem' }} placeholder="manager@kora.pro" required />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.75rem' }}>
+                <button type="button" className="btn-secondary-light" onClick={() => setShowAddModal(false)}>Cancel</button>
+                <button type="submit" className="btn-primary" style={{ background: '#4ade80', color: '#052e16', fontWeight: 800 }}>Save Manager</button>
+              </div>
+            </form>
           </div>
         </div>
       )}

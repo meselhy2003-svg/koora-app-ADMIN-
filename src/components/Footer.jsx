@@ -1,13 +1,20 @@
 import React from 'react';
 import { Globe, Shield } from 'lucide-react';
 
-export default function Footer() {
+export default function Footer({ userRole = 'admin' }) {
+  const getBrandText = () => {
+    if (userRole === 'stadium_owner') return 'KORA Stadium Owner Portal';
+    if (userRole === 'representative') return 'KORA Representative Portal';
+    if (userRole === 'manager') return 'KORA Manager Portal';
+    return 'KORA Admin Portal';
+  };
+
   return (
     <footer className="footer">
       <div className="footer-inner">
         <div className="footer-left">
-          <span className="footer-brand">KORA Admin Portal</span>
-          <span>© 2028 KORA Performance. Version 2.4.0</span>
+          <span className="footer-brand">{getBrandText()}</span>
+          <span>© 2026 KORA Performance. Version 2.4.0</span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center' }}>

@@ -1,18 +1,42 @@
 import React from 'react';
-import { Activity } from 'lucide-react';
 
-export default function HeroBanner() {
+export default function HeroBanner({ userRole = 'admin' }) {
+  const isManager = userRole === 'manager';
+  const isRepresentative = userRole === 'representative';
+
+  const getPillText = () => {
+    if (isRepresentative) return 'REPRESENTATIVE PORTAL v2.4';
+    if (isManager) return 'MANAGER PORTAL v2.4';
+    return 'ADMIN PORTAL v2.4';
+  };
+
+  const getTitleText = () => {
+    if (isRepresentative) return 'Representative Portal';
+    if (isManager) return 'Manager Portal';
+    return 'Admin Portal';
+  };
+
+  const getDescriptionText = () => {
+    if (isRepresentative) {
+      return 'Manage stadium facilities, venue inspections, field logs and operational tasks from one centralized, high-performance platform engineered for field excellence.';
+    }
+    if (isManager) {
+      return 'Manage players, stadiums, field representatives and regional operational workflows from one centralized, high-performance platform engineered for elite precision.';
+    }
+    return 'Manage players, stadiums, representatives and the entire KORA ecosystem from one centralized, high-performance platform engineered for elite precision.';
+  };
+
   return (
     <section className="hero-section">
       <div className="hero-content">
         <div className="hero-pill">
-          <span>ADMIN PORTAL v2.4</span>
+          <span>{getPillText()}</span>
         </div>
         <h1 className="hero-title">
-          Welcome to <span className="text-green">KORA</span> Admin Portal
+          Welcome to <span className="text-green">KORA</span> {getTitleText()}
         </h1>
         <p className="hero-description">
-          Manage players, stadiums, representatives and the entire KORA ecosystem from one centralized, high-performance platform engineered for elite precision.
+          {getDescriptionText()}
         </p>
       </div>
 

@@ -1,8 +1,11 @@
 import React from 'react';
 import { User, Building2, Users, ClipboardCheck, ArrowRight } from 'lucide-react';
 
-export default function EcosystemGrid({ onNavigate }) {
-  const cards = [
+export default function EcosystemGrid({ onNavigate, userRole = 'admin' }) {
+  const isManager = userRole === 'manager';
+  const isRepresentative = userRole === 'representative';
+
+  const allCards = [
     {
       id: 'players',
       tag: 'GLOBAL DATABASE',
@@ -17,7 +20,7 @@ export default function EcosystemGrid({ onNavigate }) {
       tag: 'FACILITY OPERATIONS',
       icon: Building2,
       title: 'Stadium Owners',
-      description: 'Manage stadium owners, approval workflows and venue information across multiple regions and jurisdictions.',
+      description: 'Manage stadium owners, approval workflows and venue information across assigned operational districts.',
       buttonText: 'Manage Stadiums',
       image: '/assets/landing/card_players.png'
     },
@@ -28,33 +31,51 @@ export default function EcosystemGrid({ onNavigate }) {
       title: 'Representatives Managers',
       description: 'Manage regional managers, granular permissions and assigned representative teams for operational excellence.',
       buttonText: 'Manage Managers',
-      image: '/assets/landing/card_managers.png'
+      image: '/assets/landing/card_managers.png',
+      adminOnly: true
     },
     {
       id: 'representatives',
       tag: 'FIELD OPERATIONS',
       icon: ClipboardCheck,
-      title: 'Representatives',
-      description: 'Manage field representatives, real-time inspection logs, field visits and dynamic task assignments globally.',
-      buttonText: 'Manage Representatives',
+      title: 'Field Inspections',
+      description: 'Log stadium inspection reports, pitch condition verifications, venue visits and operational task statuses.',
+      buttonText: 'Inspect Venues',
       image: '/assets/landing/card_representatives.png'
     }
   ];
+
+  let cards = allCards;
+  if (isManager) {
+    cards = allCards.filter(c => !c.adminOnly);
+  } else if (isRepresentative) {
+    cards = allCards.filter(c => c.id === 'stadiums');
+  }
+
+  const getSectionTitle = () => {
+    if (isRepresentative) return 'Representative Stadium Operations';
+    if (isManager) return 'Manager Operations Ecosystem';
+    return 'Core Management Ecosystem';
+  };
+
+  const getSectionSubtitle = () => {
+    if (isRepresentative) return 'Stadium owners management, pitch monitoring and venue operational tools for field representatives.';
+    if (isManager) return 'Operational management and monitoring tools for your assigned manager environment.';
+    return 'Advanced administrative control for every segment of the platform.';
+  };
 
   return (
     <section style={{ marginBottom: '3.5rem' }}>
       <div className="section-header">
         <div>
-          <h2 className="section-title">Core Management Ecosystem</h2>
-          <p className="section-subtitle">
-            Advanced administrative control for every segment of the platform.
-          </p>
+          <h2 className="section-title">{getSectionTitle()}</h2>
+          <p className="section-subtitle">{getSectionSubtitle()}</p>
         </div>
         <button 
           className="section-action"
-          onClick={() => onNavigate('players')}
+          onClick={() => onNavigate('stadiums')}
         >
-          Explore All Modules <ArrowRight size={16} />
+          Explore Module <ArrowRight size={16} />
         </button>
       </div>
 
@@ -77,7 +98,7 @@ export default function EcosystemGrid({ onNavigate }) {
                 </div>
                 <button 
                   className="btn-secondary-outline"
-                  onClick={() => onNavigate(card.id)}
+                  onClick={() => onNavigate('stadiums')}
                 >
                   {card.buttonText}
                 </button>
