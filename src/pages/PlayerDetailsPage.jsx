@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   ArrowLeft, 
   PauseCircle, 
@@ -14,12 +14,33 @@ import {
   Play, 
   CheckCircle,
   Building2,
-  X
+  X,
+  Plus
 } from 'lucide-react';
 
 export default function PlayerDetailsPage({ player, onBack, onOpenBookingHistory, onOpenEdit, onDeletePlayer }) {
   const [activeStatus, setActiveStatus] = useState(player?.status || 'ACTIVE');
   const [activeVideoModal, setActiveVideoModal] = useState(null);
+  
+  const [mediaList, setMediaList] = useState([
+    { id: 1, title: 'Match Highlights 2023', duration: '04:22', image: '/assets/landing/hero_action.png' },
+    { id: 2, title: 'Skill Drills: Shooting', duration: '02:15', image: '/assets/landing/card_players.png' }
+  ]);
+
+  const playerMediaInputRef = useRef(null);
+
+  const handleUploadPlayerMedia = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      const newItems = files.map((file, idx) => ({
+        id: Date.now() + idx,
+        title: file.name.replace(/\.[^/.]+$/, ""),
+        duration: file.type.startsWith('video') ? 'Video' : 'Photo',
+        image: URL.createObjectURL(file)
+      }));
+      setMediaList(prev => [...prev, ...newItems]);
+    }
+  };
 
   const playerName = player?.name || 'Ahmed El-Sayed';
   const playerId = player?.id || '#KRA-92831';
@@ -289,67 +310,87 @@ export default function PlayerDetailsPage({ player, onBack, onOpenBookingHistory
 
           {/* Player Media Section */}
           <div>
+            <input 
+              type="file" 
+              ref={playerMediaInputRef} 
+              accept="image/*,video/*" 
+              multiple 
+              style={{ display: 'none' }} 
+              onChange={handleUploadPlayerMedia} 
+            />
+
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#111827' }}>Player Media</h3>
-              <button style={{ fontSize: '0.85rem', fontWeight: 700, color: '#15A036' }}>View All</button>
+              <button 
+                style={{ fontSize: '0.85rem', fontWeight: 700, color: '#15A036', background: 'none', border: 'none', cursor: 'pointer' }}
+                onClick={() => playerMediaInputRef.current && playerMediaInputRef.current.click()}
+              >
+                + Add Media
+              </button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
-              {/* Media Card 1 */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.25rem' }}>
+              {mediaList.map(item => (
+                <div 
+                  key={item.id}
+                  onClick={() => setActiveVideoModal(item)}
+                  style={{ 
+                    position: 'relative', 
+                    height: '170px', 
+                    borderRadius: '14px', 
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <img src={item.image} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%)' }}></div>
+                  
+                  <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(21, 160, 54, 0.85)', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                    <Play size={20} style={{ marginLeft: '3px' }} />
+                  </div>
+
+                  <div style={{ position: 'absolute', top: '10px', left: '12px', fontSize: '0.75rem', fontWeight: 800, color: 'white' }}>
+                    KORA
+                  </div>
+
+                  <div style={{ position: 'absolute', bottom: '12px', left: '12px', right: '12px', color: 'white' }}>
+                    <div style={{ fontWeight: 800, fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.title}</div>
+                    <div style={{ fontSize: '0.7rem', color: '#d1d5db', marginTop: '0.1rem' }}>{item.duration}</div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Interactive Dashed Add Box */}
               <div 
-                onClick={() => setActiveVideoModal({ title: 'Match Highlights 2023', duration: '04:22', image: '/assets/landing/hero_action.png' })}
+                onClick={() => playerMediaInputRef.current && playerMediaInputRef.current.click()}
+                title="Click to upload media files"
                 style={{ 
-                  position: 'relative', 
                   height: '170px', 
                   borderRadius: '14px', 
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                  cursor: 'pointer'
+                  border: '2px dashed #cbd5e1', 
+                  display: 'flex', 
+                  flexDirection: 'column',
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  background: '#f8fafc',
+                  color: '#6b7280',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#15A036';
+                  e.currentTarget.style.color = '#15A036';
+                  e.currentTarget.style.background = '#f0fdf4';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#cbd5e1';
+                  e.currentTarget.style.color = '#6b7280';
+                  e.currentTarget.style.background = '#f8fafc';
                 }}
               >
-                <img src="/assets/landing/hero_action.png" alt="Match Highlights" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%)' }}></div>
-                
-                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(21, 160, 54, 0.85)', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                  <Play size={20} style={{ marginLeft: '3px' }} />
-                </div>
-
-                <div style={{ position: 'absolute', top: '10px', left: '12px', fontSize: '0.75rem', fontWeight: 800, color: 'white' }}>
-                  KORA
-                </div>
-                <div style={{ position: 'absolute', top: '10px', right: '12px', fontSize: '0.65rem', fontWeight: 700, color: 'rgba(255,255,255,0.8)' }}>
-                  AHMED EL-SAYED
-                </div>
-
-                <div style={{ position: 'absolute', bottom: '12px', left: '12px', right: '12px', color: 'white' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.95rem' }}>Match Highlights 2023</div>
-                  <div style={{ fontSize: '0.7rem', color: '#d1d5db', marginTop: '0.1rem' }}>04:22</div>
-                </div>
-              </div>
-
-              {/* Media Card 2 */}
-              <div 
-                onClick={() => setActiveVideoModal({ title: 'Skill Drills: Shooting', duration: '02:15', image: '/assets/landing/card_players.png' })}
-                style={{ 
-                  position: 'relative', 
-                  height: '170px', 
-                  borderRadius: '14px', 
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                  cursor: 'pointer'
-                }}
-              >
-                <img src="/assets/landing/card_players.png" alt="Skill Drills" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%)' }}></div>
-                
-                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(21, 160, 54, 0.85)', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                  <Play size={20} style={{ marginLeft: '3px' }} />
-                </div>
-
-                <div style={{ position: 'absolute', bottom: '12px', left: '12px', right: '12px', color: 'white' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.95rem' }}>Skill Drills: Shooting</div>
-                  <div style={{ fontSize: '0.7rem', color: '#d1d5db', marginTop: '0.1rem' }}>02:15</div>
-                </div>
+                <Plus size={28} />
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, marginTop: '0.35rem' }}>Upload Media</span>
               </div>
             </div>
           </div>

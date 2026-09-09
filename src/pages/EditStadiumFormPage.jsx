@@ -16,9 +16,11 @@ export default function EditStadiumFormPage({ stadium, onBack, onSave }) {
 
   const ownerPhotoRef = useRef(null);
   const coverPhotoRef = useRef(null);
+  const galleryPhotoRef = useRef(null);
 
   const [ownerPhotoPreview, setOwnerPhotoPreview] = useState(null);
   const [coverPhotoPreview, setCoverPhotoPreview] = useState(stadium?.image || null);
+  const [galleryPhotos, setGalleryPhotos] = useState(['/assets/landing/hero_stadium.png']);
 
   // Form Fields State
   const [firstName, setFirstName] = useState(stadium?.owner ? stadium.owner.split(' ')[0] : '');
@@ -62,6 +64,18 @@ export default function EditStadiumFormPage({ stadium, onBack, onSave }) {
     }
   };
 
+  const handleGalleryPhotoSelect = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      const newUrls = files.map(file => URL.createObjectURL(file));
+      setGalleryPhotos(prev => [...prev, ...newUrls]);
+    }
+  };
+
+  const removeGalleryPhoto = (indexToRemove) => {
+    setGalleryPhotos(prev => prev.filter((_, idx) => idx !== indexToRemove));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     alert(`Success: ${isEditing ? 'Updated' : 'Registered'} stadium "${stadiumName || 'New Stadium'}" in KORA platform!`);
@@ -74,6 +88,7 @@ export default function EditStadiumFormPage({ stadium, onBack, onSave }) {
       {/* Hidden File Inputs */}
       <input type="file" ref={ownerPhotoRef} accept="image/*" style={{ display: 'none' }} onChange={handleOwnerPhotoSelect} />
       <input type="file" ref={coverPhotoRef} accept="image/*,video/*" style={{ display: 'none' }} onChange={handleCoverPhotoSelect} />
+      <input type="file" ref={galleryPhotoRef} accept="image/*" multiple style={{ display: 'none' }} onChange={handleGalleryPhotoSelect} />
 
       {/* Top Navigation / Title Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.75rem' }}>
@@ -367,22 +382,45 @@ export default function EditStadiumFormPage({ stadium, onBack, onSave }) {
               </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: '1rem' }}>
-              <div style={{ height: '110px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e5e7eb' }}>
-                <img src="/assets/landing/hero_stadium.png" alt="Thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '1rem' }}>
+              {galleryPhotos.map((imgSrc, idx) => (
+                <div key={idx} style={{ position: 'relative', height: '110px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e5e7eb' }}>
+                  <img src={imgSrc} alt={`Thumbnail ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <button 
+                    type="button" 
+                    onClick={() => removeGalleryPhoto(idx)}
+                    style={{ position: 'absolute', top: '5px', right: '5px', background: 'rgba(220, 38, 38, 0.85)', color: 'white', borderRadius: '50%', border: 'none', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                    title="Remove image"
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                </div>
+              ))}
               
               <div 
-                onClick={() => coverPhotoRef.current && coverPhotoRef.current.click()}
+                onClick={() => galleryPhotoRef.current && galleryPhotoRef.current.click()}
+                title="Click to add stadium photos"
                 style={{
                   height: '110px',
                   borderRadius: '12px',
-                  background: '#f3f4f6',
+                  border: '2px dashed #cbd5e1',
+                  background: '#f8fafc',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  color: '#6b7280'
+                  color: '#6b7280',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#15A036';
+                  e.currentTarget.style.color = '#15A036';
+                  e.currentTarget.style.background = '#f0fdf4';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#cbd5e1';
+                  e.currentTarget.style.color = '#6b7280';
+                  e.currentTarget.style.background = '#f8fafc';
                 }}
               >
                 <Plus size={24} />

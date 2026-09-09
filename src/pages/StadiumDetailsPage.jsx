@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   ArrowLeft, 
   MapPin, 
@@ -21,7 +21,8 @@ import {
   Zap,
   Car,
   Bath,
-  Sun
+  Sun,
+  Trash2
 } from 'lucide-react';
 
 export default function StadiumDetailsPage({ stadium, onBack, onOpenEdit }) {
@@ -29,10 +30,38 @@ export default function StadiumDetailsPage({ stadium, onBack, onOpenEdit }) {
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
 
+  const [heroImage, setHeroImage] = useState(stadium?.image || '/assets/stadiums/hero_stadium_render.png');
+  const [galleryImages, setGalleryImages] = useState([
+    '/assets/landing/hero_stadium.png',
+    '/assets/stadiums/stadium_zayed.png',
+    '/assets/stadiums/stadium_maadi.png'
+  ]);
+
+  const galleryFileInputRef = useRef(null);
+  const heroFileInputRef = useRef(null);
+
+  const handleHeroUpload = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      setHeroImage(URL.createObjectURL(file));
+    }
+  };
+
+  const handleGalleryUpload = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      const newUrls = files.map(file => URL.createObjectURL(file));
+      setGalleryImages(prev => [...prev, ...newUrls]);
+    }
+  };
+
+  const removeGalleryImage = (indexToRemove) => {
+    setGalleryImages(prev => prev.filter((_, idx) => idx !== indexToRemove));
+  };
+
   const stadiumName = stadium?.name || 'Al Salam Premium Arena';
   const stadiumId = stadium?.id || 'STAD-8924';
   const stadiumLoc = stadium?.location || 'Riyadh, KSA';
-  const stadiumImage = '/assets/stadiums/hero_stadium_render.png';
   const stadiumRate = stadium?.hourlyRate || '300 EGP/hr';
   const stadiumFormat = stadium?.type || '11 vs 11 Grass';
 
@@ -84,6 +113,23 @@ export default function StadiumDetailsPage({ stadium, onBack, onOpenEdit }) {
 
   return (
     <div style={{ paddingBottom: '4rem' }}>
+      {/* Hidden file inputs for uploads */}
+      <input 
+        type="file" 
+        ref={heroFileInputRef} 
+        accept="image/*" 
+        style={{ display: 'none' }} 
+        onChange={handleHeroUpload} 
+      />
+      <input 
+        type="file" 
+        ref={galleryFileInputRef} 
+        accept="image/*" 
+        multiple 
+        style={{ display: 'none' }} 
+        onChange={handleGalleryUpload} 
+      />
+
       {/* Top Header Title Bar */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.75rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -120,8 +166,14 @@ export default function StadiumDetailsPage({ stadium, onBack, onOpenEdit }) {
         boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
         background: 'linear-gradient(135deg, #0d131f 0%, #1f2937 100%)'
       }}>
-        <img src={stadiumImage} alt={stadiumName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        <div style={{ position: 'absolute', top: '16px', right: '16px', cursor: 'pointer' }}>
+        <img src={heroImage} alt={stadiumName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div 
+          onClick={() => heroFileInputRef.current && heroFileInputRef.current.click()}
+          title="Upload / Change Stadium Image"
+          style={{ position: 'absolute', top: '16px', right: '16px', cursor: 'pointer', transition: 'transform 0.2s ease' }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+        >
           <img src="/assets/stadiums/camera_button.png" alt="Camera Button" style={{ width: '36px', height: '36px', objectFit: 'contain' }} />
         </div>
       </div>
@@ -130,30 +182,71 @@ export default function StadiumDetailsPage({ stadium, onBack, onOpenEdit }) {
       <div style={{ marginBottom: '2.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
           <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#111827' }}>Gallery</h3>
-          <button style={{ fontSize: '0.825rem', fontWeight: 700, color: '#15A036' }}>View All →</button>
+          <button 
+            style={{ fontSize: '0.825rem', fontWeight: 700, color: '#15A036', background: 'none', border: 'none', cursor: 'pointer' }}
+            onClick={() => galleryFileInputRef.current && galleryFileInputRef.current.click()}
+          >
+            + Add Photos →
+          </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
-          <div style={{ height: '100px', borderRadius: '12px', overflow: 'hidden' }}>
-            <img src="/assets/landing/hero_stadium.png" alt="Pitch" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          </div>
-          <div style={{ height: '100px', borderRadius: '12px', overflow: 'hidden' }}>
-            <img src="/assets/stadiums/stadium_zayed.png" alt="Locker Room" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          </div>
-          <div style={{ height: '100px', borderRadius: '12px', overflow: 'hidden' }}>
-            <img src="/assets/stadiums/stadium_maadi.png" alt="Floodlights" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          </div>
-          <div style={{ 
-            height: '100px', 
-            borderRadius: '12px', 
-            border: '2px dashed #d1d5db', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            background: '#fafafa',
-            color: '#6b7280',
-            cursor: 'pointer'
-          }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '1rem' }}>
+          {galleryImages.map((imgSrc, idx) => (
+            <div key={idx} style={{ position: 'relative', height: '100px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e5e7eb' }}>
+              <img src={imgSrc} alt={`Gallery ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <button 
+                type="button" 
+                onClick={() => removeGalleryImage(idx)}
+                style={{
+                  position: 'absolute',
+                  top: '5px',
+                  right: '5px',
+                  background: 'rgba(220, 38, 38, 0.85)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '22px',
+                  height: '22px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer'
+                }}
+                title="Remove photo"
+              >
+                <Trash2 size={12} />
+              </button>
+            </div>
+          ))}
+
+          {/* Interactive Dashed Add Photo Box */}
+          <div 
+            onClick={() => galleryFileInputRef.current && galleryFileInputRef.current.click()}
+            title="Click to upload gallery photos"
+            style={{ 
+              height: '100px', 
+              borderRadius: '12px', 
+              border: '2px dashed #d1d5db', 
+              display: 'flex', 
+              flexDirection: 'column',
+              alignItems: 'center', 
+              justifyContent: 'center',
+              background: '#fafafa',
+              color: '#6b7280',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = '#15A036';
+              e.currentTarget.style.background = '#f0fdf4';
+              e.currentTarget.style.color = '#15A036';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = '#d1d5db';
+              e.currentTarget.style.background = '#fafafa';
+              e.currentTarget.style.color = '#6b7280';
+            }}
+          >
             <Plus size={24} />
           </div>
         </div>
