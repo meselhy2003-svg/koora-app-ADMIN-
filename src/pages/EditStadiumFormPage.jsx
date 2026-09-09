@@ -382,17 +382,17 @@ export default function EditStadiumFormPage({ stadium, onBack, onSave }) {
               </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: '1.25rem' }}>
               {galleryPhotos.map((imgSrc, idx) => (
-                <div key={idx} style={{ position: 'relative', height: '110px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e5e7eb' }}>
+                <div key={idx} style={{ position: 'relative', height: '160px', borderRadius: '14px', overflow: 'hidden', border: '1px solid #e5e7eb', boxShadow: '0 4px 10px rgba(0,0,0,0.04)' }}>
                   <img src={imgSrc} alt={`Thumbnail ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   <button 
                     type="button" 
                     onClick={() => removeGalleryPhoto(idx)}
-                    style={{ position: 'absolute', top: '5px', right: '5px', background: 'rgba(220, 38, 38, 0.85)', color: 'white', borderRadius: '50%', border: 'none', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                    style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(220, 38, 38, 0.9)', color: 'white', borderRadius: '50%', border: 'none', width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                     title="Remove image"
                   >
-                    <Trash2 size={12} />
+                    <Trash2 size={13} />
                   </button>
                 </div>
               ))}
@@ -401,11 +401,12 @@ export default function EditStadiumFormPage({ stadium, onBack, onSave }) {
                 onClick={() => galleryPhotoRef.current && galleryPhotoRef.current.click()}
                 title="Click to add stadium photos"
                 style={{
-                  height: '110px',
-                  borderRadius: '12px',
+                  height: '160px',
+                  borderRadius: '14px',
                   border: '2px dashed #cbd5e1',
                   background: '#f8fafc',
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
@@ -423,7 +424,8 @@ export default function EditStadiumFormPage({ stadium, onBack, onSave }) {
                   e.currentTarget.style.background = '#f8fafc';
                 }}
               >
-                <Plus size={24} />
+                <Plus size={30} />
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, marginTop: '0.35rem' }}>Add Photo</span>
               </div>
             </div>
           </div>

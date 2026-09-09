@@ -180,41 +180,55 @@ export default function StadiumDetailsPage({ stadium, onBack, onOpenEdit }) {
 
       {/* Gallery Section */}
       <div style={{ marginBottom: '2.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#111827' }}>Gallery</h3>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#111827' }}>Gallery</h3>
           <button 
-            style={{ fontSize: '0.825rem', fontWeight: 700, color: '#15A036', background: 'none', border: 'none', cursor: 'pointer' }}
+            style={{ 
+              fontSize: '0.9rem', 
+              fontWeight: 800, 
+              color: '#15A036', 
+              background: '#f0fdf4', 
+              border: '1px solid #bbf7d0', 
+              padding: '0.45rem 1rem',
+              borderRadius: '20px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              transition: 'all 0.2s ease'
+            }}
             onClick={() => galleryFileInputRef.current && galleryFileInputRef.current.click()}
           >
             + Add Photos →
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '1.25rem' }}>
           {galleryImages.map((imgSrc, idx) => (
-            <div key={idx} style={{ position: 'relative', height: '100px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e5e7eb' }}>
+            <div key={idx} style={{ position: 'relative', height: '170px', borderRadius: '16px', overflow: 'hidden', border: '1px solid #e5e7eb', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
               <img src={imgSrc} alt={`Gallery ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               <button 
                 type="button" 
                 onClick={() => removeGalleryImage(idx)}
                 style={{
                   position: 'absolute',
-                  top: '5px',
-                  right: '5px',
-                  background: 'rgba(220, 38, 38, 0.85)',
+                  top: '8px',
+                  right: '8px',
+                  background: 'rgba(220, 38, 38, 0.9)',
                   color: 'white',
                   border: 'none',
                   borderRadius: '50%',
-                  width: '22px',
-                  height: '22px',
+                  width: '28px',
+                  height: '28px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
                 }}
                 title="Remove photo"
               >
-                <Trash2 size={12} />
+                <Trash2 size={14} />
               </button>
             </div>
           ))}
@@ -224,14 +238,14 @@ export default function StadiumDetailsPage({ stadium, onBack, onOpenEdit }) {
             onClick={() => galleryFileInputRef.current && galleryFileInputRef.current.click()}
             title="Click to upload gallery photos"
             style={{ 
-              height: '100px', 
-              borderRadius: '12px', 
-              border: '2px dashed #d1d5db', 
+              height: '170px', 
+              borderRadius: '16px', 
+              border: '2px dashed #cbd5e1', 
               display: 'flex', 
               flexDirection: 'column',
               alignItems: 'center', 
               justifyContent: 'center',
-              background: '#fafafa',
+              background: '#f8fafc',
               color: '#6b7280',
               cursor: 'pointer',
               transition: 'all 0.2s ease'
@@ -242,12 +256,13 @@ export default function StadiumDetailsPage({ stadium, onBack, onOpenEdit }) {
               e.currentTarget.style.color = '#15A036';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = '#d1d5db';
-              e.currentTarget.style.background = '#fafafa';
+              e.currentTarget.style.borderColor = '#cbd5e1';
+              e.currentTarget.style.background = '#f8fafc';
               e.currentTarget.style.color = '#6b7280';
             }}
           >
-            <Plus size={24} />
+            <Plus size={32} />
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, marginTop: '0.4rem' }}>Add Photo</span>
           </div>
         </div>
       </div>
