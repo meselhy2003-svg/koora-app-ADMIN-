@@ -345,8 +345,9 @@ export default function StadiumDetailsPage({ stadium, onBack, onOpenEdit }) {
               King Fahd Road, Al Olaya District, Riyadh 12211, Saudi Arabia
             </div>
 
-            <button className="btn-secondary-light" style={{ width: '100%', justifyContent: 'center', borderRadius: '8px', fontSize: '0.8rem' }} onClick={() => window.open('https://maps.google.com')}>
-              🗺 View on Google Maps
+            <button className="btn-secondary-light" style={{ width: '100%', justifyContent: 'center', borderRadius: '8px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }} onClick={() => window.open('https://maps.google.com')}>
+              <img src="/assets/stadiums/google_maps_icon.png" alt="Google Maps Icon" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
+              <span>View on Google Maps</span>
             </button>
           </div>
 
