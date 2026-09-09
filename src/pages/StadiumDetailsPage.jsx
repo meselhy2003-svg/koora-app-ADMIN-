@@ -423,9 +423,6 @@ export default function StadiumDetailsPage({ stadium, onBack, onOpenEdit }) {
                   {match.paymentMethod === 'BANK TX' && <img src="/assets/stadiums/payment_bank.png" alt="BANK TX" style={{ width: '15px', height: '15px', objectFit: 'contain' }} />}
                   <span>{match.paymentMethod}</span>
                 </div>
-                <button className="btn-secondary-light" style={{ marginTop: '0.5rem', padding: '0.35rem 0.85rem', fontSize: '0.75rem', borderRadius: '6px' }} onClick={() => alert(`View details for match ${match.id}`)}>
-                  View Details
-                </button>
               </div>
             </div>
           ))}
